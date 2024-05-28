@@ -5,7 +5,7 @@ import psycopg2 as pgc
 
 main = Blueprint('main', __name__)
 cnn = pgc.connect( os.getenv('DATABASE_URL'))
-@main.route('/')
+@main.get('/')
 def index():
     return "e_e"
 
