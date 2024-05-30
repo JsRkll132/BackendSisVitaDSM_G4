@@ -23,3 +23,8 @@ class Security() :
         print (key)
         return jwt.encode(payload=payload,key=os.getenv('JWT_KEY'),algorithm = 'HS256')
         
+    @classmethod
+    def verify_token(cls,headers) : 
+        if 'Authorization' in headers.keys() :
+            authorization = headers['Authorization']
+            encoded_token = authorization.split(" ")[1]
