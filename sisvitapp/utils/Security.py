@@ -2,8 +2,8 @@ import datetime
 import jwt
 from dotenv import load_dotenv
 import pytz
-load_dotenv()
 import os
+load_dotenv()
 class Security() :
     tz = pytz.timezone('America/Lima')
     @classmethod
