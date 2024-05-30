@@ -1,9 +1,10 @@
 from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService
 from flask import Blueprint,jsonify,request
 from ..models.dbModel import Usuarios
+from ..utils import Security
 import bcrypt
 users_routes = Blueprint('users_routes',__name__)
-
+import jwt
 @users_routes.get('/api/v2/getusers')
 def getUsersRoute() :
     data =  getUsersService()
@@ -30,8 +31,12 @@ def userLogin() :
     try :
         username = request.json['username']
         password = request.json['password']
-        if userLoginService(username=username,password=password) : 
-            return jsonify({'status':'sucess login'}) , 200
+        userAuth = userLoginService(username=username,password=password)
+        print(userAuth.id)
+        if  userAuth : 
+            token = Security.Security().generate_token(userAuth)
+            print(token)
+            return jsonify({'status':'sucess login','token':token}) , 200
         else :
             return jsonify({'status':'icorrect login'}) ,401
     except :
