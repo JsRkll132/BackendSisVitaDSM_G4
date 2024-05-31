@@ -1,5 +1,5 @@
 import datetime
-import jwt
+from jwt.api_jwt import PyJWT
 from dotenv import load_dotenv
 import pytz
 import os
@@ -19,9 +19,10 @@ class Security() :
         print(payload)
         
         print(os.getenv('JWT_KEY'))
-        key = jwt.encode(payload=payload,key=os.getenv('JWT_KEY'),algorithm = 'HS256')
+        
+        key = PyJWT().encode(payload=payload,key=os.getenv('JWT_KEY'),algorithm = 'HS256')
         print (key)
-        return jwt.encode(payload=payload,key=os.getenv('JWT_KEY'),algorithm = 'HS256')
+        return PyJWT().encode(payload=payload,key=os.getenv('JWT_KEY'),algorithm = 'HS256')
         
     @classmethod
     def verify_token(cls,headers) : 
