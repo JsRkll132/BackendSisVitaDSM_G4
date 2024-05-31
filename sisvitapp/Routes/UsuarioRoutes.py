@@ -39,8 +39,8 @@ def userLogin() :
             return jsonify({'status':'sucess login','token':token}) , 200
         else :
             return jsonify({'status':'icorrect login'}) ,401
-    except :
-        return jsonify({'error':'missing arguments'}) , 503
+    except Exception as e:
+        return jsonify(f"Error: {e}")
     
 @users_routes.post('/api/v2/register')   
 def userRegister() : 
