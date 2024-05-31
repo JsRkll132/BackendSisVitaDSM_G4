@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 # Crear la base declarativa
 Base = declarative_base()
-#load_dotenv()
+load_dotenv()
 # Definir la clase Usuarios
 class Usuarios(Base):
     __tablename__ = 'usuarios'
