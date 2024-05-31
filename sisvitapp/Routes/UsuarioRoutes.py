@@ -41,8 +41,8 @@ def userLogin() :
         else :
             return jsonify({'status':'icorrect login'}) ,401
     except Exception as e:
-        
-        return jsonify({"Error":e,"traceback_error":traceback.format_exc()})
+        errorstack = str(traceback.format_exc())
+        return jsonify({"Error":str(e),"traceback_error":errorstack})
     
 @users_routes.post('/api/v2/register')   
 def userRegister() : 
