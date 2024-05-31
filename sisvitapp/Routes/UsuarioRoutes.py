@@ -73,7 +73,7 @@ def userRegister() :
         return jsonify({'status':'ocurrio un error...'}),503
 
 
-@users_routes.post('/api/v2/questions')
+@users_routes.get('/api/v2/questions')
 def beckQuestionsRoutes() : 
     try : 
         data = beckQuestionsService()
