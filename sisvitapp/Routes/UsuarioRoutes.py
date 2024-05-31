@@ -3,6 +3,7 @@ from flask import Blueprint,jsonify,request
 from ..models.dbModel import Usuarios
 from ..utils import Security
 import bcrypt
+import traceback
 users_routes = Blueprint('users_routes',__name__)
 import jwt
 @users_routes.get('/api/v2/getusers')
@@ -40,7 +41,8 @@ def userLogin() :
         else :
             return jsonify({'status':'icorrect login'}) ,401
     except Exception as e:
-        return jsonify(f"Error: {e}")
+        
+        return jsonify({"Error":e,"traceback_error":traceback.format_exc()})
     
 @users_routes.post('/api/v2/register')   
 def userRegister() : 
