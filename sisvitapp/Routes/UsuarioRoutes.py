@@ -1,4 +1,4 @@
-from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService
+from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService,beckQuestionsService
 from flask import Blueprint,jsonify,request
 from ..models.dbModel import Usuarios
 from ..utils import Security
@@ -71,3 +71,14 @@ def userRegister() :
         
     except :
         return jsonify({'status':'ocurrio un error...'}),503
+
+
+@users_routes.post('/api/v2/questions')
+def beckQuestionsRoutes() : 
+    try : 
+        data = beckQuestionsService()
+        questions = [{'id':user.id,'formulario_id' : user.formulario_id,'pregunta':user.pregunta} for user in data]
+        return jsonify(questions),200
+    
+    except :
+        return jsonify({"status":"Ocurrio un error en la solicitud"}),500

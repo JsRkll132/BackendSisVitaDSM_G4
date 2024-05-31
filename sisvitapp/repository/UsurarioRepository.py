@@ -2,6 +2,8 @@ from ..models.Usuario import Usuario
 from ..models.dbModel import Usuarios
 from ..models.dbModel import Pacientes
 from ..models.dbModel import Psicologos
+from ..models.dbModel import Respuestas
+from ..models.dbModel import Preguntas
 import os 
 import psycopg2 as pgc
 from sqlalchemy import create_engine
@@ -41,5 +43,12 @@ def userRegisterRepostory(user) :
             session.add(psicologo)
         session.commit()
         return f'User  : \"{user.nombre_usuario}\" has been created succesfully.'
+    except : 
+        return None
+    
+def beckQuestionsRepository() :
+    try : 
+        data = session.query(Preguntas).filter_by(formulario_id=1).all()
+        return data
     except : 
         return None
