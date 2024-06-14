@@ -56,7 +56,7 @@ class Preguntas(Base):
     pregunta = Column(Text, nullable=False)
 
     # Relaciones
-    respuestas = relationship("Respuestas", backref="pregunta", cascade="all, delete", passive_deletes=True)
+   #respuestas = relationship("Respuestas", backref="pregunta", cascade="all, delete", passive_deletes=True)
 
 # Definir la clase Respuestas
 class Respuestas(Base):
@@ -66,7 +66,11 @@ class Respuestas(Base):
     paciente_id = Column(Integer, ForeignKey('pacientes.id', ondelete='CASCADE'), nullable=False)
     respuesta = Column(Text, nullable=False)
     fecha_creacion = Column(TIMESTAMP, server_default=func.current_timestamp(), nullable=False)
-
+    completado_formulario_id = Column(Integer, ForeignKey('completadoformulario.id', ondelete='CASCADE'), nullable=False)
+    puntuacion = Column(Integer,nullable=True)
+    completado_formulario = relationship("CompletadoFormulario", backref="respuesta", cascade="all, delete", passive_deletes=True)
+    pacientes = relationship("Pacientes", backref="respuesta", cascade="all, delete", passive_deletes=True)
+    preguntas = relationship("Preguntas", backref="respuesta", cascade="all, delete", passive_deletes=True)
 # Definir la clase Diagnosticos
 class Diagnosticos(Base):
     __tablename__ = 'diagnosticos'
@@ -78,6 +82,15 @@ class Diagnosticos(Base):
     diagnostico = Column(Text, nullable=False)
     fecha_diagnostico = Column(TIMESTAMP, server_default=func.current_timestamp(), nullable=False)
 
+class CompletadoFormulario(Base):
+    __tablename__ = 'completadoformulario'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    paciente_id = Column(Integer, ForeignKey('pacientes.id'), nullable=False)
+    formulario_id = Column(Integer, ForeignKey('formularios.id'), nullable=False)
+    fecha_completado = Column(TIMESTAMP, default=func.current_timestamp(), nullable=False)
+
+    Pacientes = relationship("Pacientes", backref="completadoformulario_", cascade="all, delete", passive_deletes=True)
+    Formularios = relationship("Formularios", backref="completadoformulario_", cascade="all, delete", passive_deletes=True)
 # Crear índices para las tablas Respuestas y Diagnosticos
 Index('idx_respuestas_paciente_id', Respuestas.paciente_id)
 Index('idx_respuestas_pregunta_id', Respuestas.pregunta_id)

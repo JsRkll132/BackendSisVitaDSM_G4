@@ -1,6 +1,6 @@
-from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService,beckQuestionsService
+from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService,beckQuestionsService,userSubmitFormService
 from flask import Blueprint,jsonify,request
-from ..models.dbModel import Usuarios
+from ..models.dbModel import Usuarios,Respuestas
 from ..utils import Security
 import bcrypt
 import traceback
@@ -82,3 +82,22 @@ def beckQuestionsRoutes() :
     
     except :
         return jsonify({"status":"Ocurrio un error en la solicitud"}),500
+
+
+@users_routes.post('/api/v2/llenarFormulario')   
+def userSubmitFormRoutes() : 
+    try :
+        paciente_id = request.json['paciente_id']
+        formulario_id = request.json['formulario_id']
+        respuestas = [Respuestas(respuesta = rpta['respuesta'],
+                                 puntuacion =rpta['puntuacion'],pregunta_id = rpta['pregunta_id'],paciente_id = rpta['paciente_id']) for rpta in  request.json['respuestas']] 
+        for resp in respuestas :
+            print(resp.puntuacion)
+        db_response = userSubmitFormService(answerList=respuestas,user_id=paciente_id,form_id=formulario_id)
+        if db_response :
+            return jsonify({'status':db_response}),200
+        else :
+            return jsonify({'status':'No es posible añadir'}),500
+        
+    except :
+        return jsonify({'status':'ocurrio un error, no se pudo enviar el formulario...'}),503

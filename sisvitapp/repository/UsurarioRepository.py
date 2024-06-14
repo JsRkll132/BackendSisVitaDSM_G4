@@ -4,6 +4,7 @@ from ..models.dbModel import Pacientes
 from ..models.dbModel import Psicologos
 from ..models.dbModel import Respuestas
 from ..models.dbModel import Preguntas
+from ..models.dbModel import CompletadoFormulario
 import os 
 import psycopg2 as pgc
 from sqlalchemy import create_engine
@@ -51,4 +52,22 @@ def beckQuestionsRepository() :
         data = session.query(Preguntas).filter_by(formulario_id=1).all()
         return data
     except : 
+        return None
+    
+def userSubmitFormRepository(answerList,user_id,form_id) :
+    try : 
+        print('------------')
+        complete_form = CompletadoFormulario(paciente_id=user_id,formulario_id=form_id)
+        try : 
+            session.add(complete_form)
+            session.commit()
+            cform_id = complete_form.id
+            [session.add(Respuestas(respuesta = answer.respuesta,puntuacion = answer.puntuacion,pregunta_id = answer.pregunta_id
+                                    ,paciente_id = answer.paciente_id,completado_formulario_id=cform_id)) for answer in answerList ]
+            session.commit()
+            return f'Response has been submited succesfully.'
+        except Exception as e:
+            print(str(e)) 
+
+    except  : 
         return None
