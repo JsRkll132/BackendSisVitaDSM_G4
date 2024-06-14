@@ -65,7 +65,7 @@ def userRegister() :
                             )
         content = userRegisterService(new_user)
         if content :
-            return jsonify({'status':content}),200
+            return jsonify({'status':content,'sucess':1}),200
         else :
             return jsonify({'status':'No es posible añadir'}),500
         
