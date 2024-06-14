@@ -5,6 +5,7 @@ from ..models.dbModel import Psicologos
 from ..models.dbModel import Respuestas
 from ..models.dbModel import Preguntas
 from ..models.dbModel import CompletadoFormulario
+from ..models.dbModel import Formularios
 import os 
 import psycopg2 as pgc
 from sqlalchemy import create_engine
@@ -53,7 +54,12 @@ def FormQuestionsRepository(id_) :
         return data
     except : 
         return None
-    
+def GetAllFormsRepository() : 
+    try : 
+        data = session.query(Formularios).all()
+        return data
+    except : 
+        return None
 def userSubmitFormRepository(answerList,user_id,form_id) :
     try : 
         print('------------')

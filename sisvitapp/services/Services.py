@@ -1,4 +1,4 @@
-from ..repository.UsurarioRepository import getUsers,userLoginRepository,userRegisterRepostory,FormQuestionsRepository,userSubmitFormRepository
+from ..repository.UsurarioRepository import getUsers,userLoginRepository,userRegisterRepostory,FormQuestionsRepository,userSubmitFormRepository,GetAllFormsRepository
 from ..models.dbModel import Usuarios
 from sqlalchemy import create_engine, Column, Integer, String, Text, ForeignKey, TIMESTAMP, func, CheckConstraint, Index
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker, backref
@@ -25,3 +25,5 @@ def FormQuestionsService(id):
 
 def userSubmitFormService(answerList,user_id,form_id) :
     return  userSubmitFormRepository(answerList,user_id,form_id)
+def GetAllFormsService() :
+    return GetAllFormsRepository() 

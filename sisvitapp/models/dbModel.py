@@ -81,7 +81,13 @@ class Diagnosticos(Base):
     calificacion = Column(Integer, nullable=False)
     diagnostico = Column(Text, nullable=False)
     fecha_diagnostico = Column(TIMESTAMP, server_default=func.current_timestamp(), nullable=False)
+class PuntajesFormulario(Base):
+    __tablename__ = 'puntajesformulario'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    puntaje = Column(Integer, nullable=False)
+    formulario_id = Column(Integer, ForeignKey('formularios.id'), nullable=False)
 
+    formulario = relationship("Formularios", backref="puntajesformulario")
 class CompletadoFormulario(Base):
     __tablename__ = 'completadoformulario'
     id = Column(Integer, primary_key=True, autoincrement=True)

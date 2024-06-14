@@ -1,4 +1,4 @@
-from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService
+from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService,GetAllFormsService
 from flask import Blueprint,jsonify,request
 from ..models.dbModel import Usuarios,Respuestas
 from ..utils import Security
@@ -83,6 +83,16 @@ def FormQuestionsRoutes(id) :
     except :
         return jsonify({"status":"Ocurrio un error en la solicitud"}),500
 
+@users_routes.get('/api/v2/forms')
+def GetAllFormsRoutes() : 
+    try : 
+        data = GetAllFormsService()
+        questions = [{'id':form_.id,'formulario_tipo' : form_.tipo,'Descripcion':form_.descripcion} for form_ in data]
+        return jsonify(questions),200
+    
+    except :
+        return jsonify({"status":"Ocurrio un error en la solicitud"}),500
+    
 
 @users_routes.post('/api/v2/llenarFormulario')   
 def userSubmitFormRoutes() : 
