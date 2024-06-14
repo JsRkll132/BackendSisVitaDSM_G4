@@ -1,4 +1,4 @@
-from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService,beckQuestionsService,userSubmitFormService
+from ..services.Services import getUsersService,getUsersService2,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService
 from flask import Blueprint,jsonify,request
 from ..models.dbModel import Usuarios,Respuestas
 from ..utils import Security
@@ -73,10 +73,10 @@ def userRegister() :
         return jsonify({'status':'ocurrio un error...'}),503
 
 
-@users_routes.get('/api/v2/questions')
-def beckQuestionsRoutes() : 
+@users_routes.get('/api/v2/questions/<int:id>')
+def FormQuestionsRoutes(id) : 
     try : 
-        data = beckQuestionsService()
+        data = FormQuestionsService(id)
         questions = [{'id':user.id,'formulario_id' : user.formulario_id,'pregunta':user.pregunta} for user in data]
         return jsonify(questions),200
     

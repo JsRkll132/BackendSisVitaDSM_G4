@@ -47,9 +47,9 @@ def userRegisterRepostory(user) :
     except : 
         return None
     
-def beckQuestionsRepository() :
+def FormQuestionsRepository(id_) :
     try : 
-        data = session.query(Preguntas).filter_by(formulario_id=1).all()
+        data = session.query(Preguntas).filter_by(formulario_id=id_).all()
         return data
     except : 
         return None
