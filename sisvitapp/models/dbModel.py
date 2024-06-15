@@ -88,6 +88,13 @@ class PuntajesFormulario(Base):
     formulario_id = Column(Integer, ForeignKey('formularios.id'), nullable=False)
 
     formulario = relationship("Formularios", backref="puntajesformulario")
+class RespuestaFormulario(Base):
+    __tablename__ = 'respuestaformulario'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    respuestaformulario = Column(String(255), nullable=False)
+    formulario_id = Column(Integer, ForeignKey('formularios.id'), nullable=False)
+
+    formulario = relationship("Formularios", backref="respuestaformulario")
 class CompletadoFormulario(Base):
     __tablename__ = 'completadoformulario'
     id = Column(Integer, primary_key=True, autoincrement=True)
