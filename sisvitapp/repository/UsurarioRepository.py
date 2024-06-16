@@ -29,9 +29,12 @@ def getUsers() :
         return users 
     
 def userLoginRepository(username , password) :
-    
-    user = session.query(Usuarios).filter_by(nombre_usuario = username).first()
-    return user if bcrypt.checkpw(password.encode('utf-8'),user.contrasena.encode('utf-8')) else None
+    try :
+        user = session.query(Usuarios).filter_by(nombre_usuario = username).first()
+        return user if bcrypt.checkpw(password.encode('utf-8'),user.contrasena.encode('utf-8')) else None
+    except : 
+        session.rollback()
+        return None
 
 
 def userRegisterRepostory(user) :
@@ -48,6 +51,7 @@ def userRegisterRepostory(user) :
         session.commit()
         return {'User': f'\"{user.nombre_usuario}\" has been created succesfully.','status':1}
     except Exception as e : 
+        session.rollback()
         return {'error_sis':e,'status':0}
     
 def FormQuestionsRepository(id_) :
@@ -55,12 +59,14 @@ def FormQuestionsRepository(id_) :
         data = session.query(Preguntas).filter_by(formulario_id=id_).all()
         return data
     except : 
+        session.rollback()
         return None
 def GetAllFormsRepository() : 
     try : 
         data = session.query(Formularios).all()
         return data
     except : 
+        session.rollback()
         return None
 def userSubmitFormRepository(answerList,user_id,form_id) :
     try : 
@@ -75,9 +81,11 @@ def userSubmitFormRepository(answerList,user_id,form_id) :
             session.commit()
             return f'Response has been submited succesfully.'
         except Exception as e:
+            session.rollback()
             print(str(e)) 
 
     except  : 
+        session.rollback()
         return None
 
 def AnswerFormQuestionsRepository(id) :
@@ -86,6 +94,7 @@ def AnswerFormQuestionsRepository(id) :
         return data
         
     except : 
+        session.rollback()
         return None
     
 def PointFormQuestionsRepository(id) :
@@ -94,5 +103,6 @@ def PointFormQuestionsRepository(id) :
         return data
         
     except : 
+        session.rollback()
         return None
     
