@@ -46,9 +46,9 @@ def userRegisterRepostory(user) :
             psicologo = Psicologos(usuario_id=user.id)
             session.add(psicologo)
         session.commit()
-        return f'User  : \"{user.nombre_usuario}\" has been created succesfully.'
-    except : 
-        return None
+        return {'User': f'\"{user.nombre_usuario}\" has been created succesfully.','status':1}
+    except Exception as e : 
+        return {'error_sis':e,'status':0}
     
 def FormQuestionsRepository(id_) :
     try : 
@@ -95,3 +95,4 @@ def PointFormQuestionsRepository(id) :
         
     except : 
         return None
+    

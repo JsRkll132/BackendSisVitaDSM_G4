@@ -64,10 +64,10 @@ def userRegister() :
                             numero_celular = numero_celular
                             )
         content = userRegisterService(new_user)
-        if content :
+        if content['status']==1 :
             return jsonify({'status':content,'sucess':1}),200
         else :
-            return jsonify({'status':'No es posible añadir'}),500
+            return content,500
         
     except :
         return jsonify({'status':'ocurrio un error...'}),503
