@@ -6,8 +6,7 @@ from ..models.dbModel import Respuestas
 from ..models.dbModel import Preguntas
 from ..models.dbModel import CompletadoFormulario
 from ..models.dbModel import Formularios
-from ..models.dbModel import RespuestaFormulario
-from ..models.dbModel import  PuntajesFormulario
+from ..models.dbModel import  ContenidoFormulario
 import os 
 import psycopg2 as pgc
 from sqlalchemy import create_engine
@@ -88,21 +87,11 @@ def userSubmitFormRepository(answerList,user_id,form_id) :
         session.rollback()
         return None
 
-def AnswerFormQuestionsRepository(id) :
+def InputContentFormRepository(id) :
     try : 
-        data = session.query(RespuestaFormulario).filter_by(formulario_id = id).all()
+        data = session.query(ContenidoFormulario).filter_by(formulario_id = id).all()
         return data
-        
     except : 
         session.rollback()
         return None
-    
-def PointFormQuestionsRepository(id) :
-    try : 
-        data = session.query(PuntajesFormulario).filter_by(formulario_id = id).all()
-        return data
-        
-    except : 
-        session.rollback()
-        return None
-    
+
