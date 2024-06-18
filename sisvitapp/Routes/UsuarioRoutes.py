@@ -117,11 +117,11 @@ def userSubmitFormRoutes() :
             print(resp.puntuacion)
         db_response = userSubmitFormService(answerList=respuestas,user_id=paciente_id,form_id=formulario_id)
         if db_response :
-            return jsonify({'status':db_response}),200
+            return jsonify({'status':db_response,'result_status':1}),200
         else :
-            return jsonify({'status':'No es posible añadir'}),500
+            return jsonify({'status':'No es posible añadir','result_status':0}),500
         
     except :
-        return jsonify({'status':'ocurrio un error, no se pudo enviar el formulario...'}),503
+        return jsonify({'status':'ocurrio un error, no se pudo enviar el formulario...','result_status':0}),503
 
 

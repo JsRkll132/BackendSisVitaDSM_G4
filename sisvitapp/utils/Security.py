@@ -12,8 +12,6 @@ class Security() :
             'iat' :datetime.datetime.now(tz=cls.tz),
             'exp' :datetime.datetime.now(tz=cls.tz)+datetime.timedelta(minutes=120) ,
             'id_user' : auth_user.id,
-            'username' : auth_user.nombre_usuario,          
-            'tipo_usuario' : auth_user.tipo_usuario 
              
         }
         print(payload)
