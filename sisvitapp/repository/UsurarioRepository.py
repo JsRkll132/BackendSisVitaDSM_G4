@@ -193,4 +193,21 @@ def obtener_puntuacionesAllRepository():
         session.rollback()
         return None
 
+def obtener_respuestasRepository(paciente_id,completado_formulario_id ):
+    try : 
+        respuestas = session.query(
+            Respuestas.id.label('respuesta_id'),
+            Respuestas.respuesta,
+            Respuestas.puntuacion,
+            Preguntas.pregunta
+        ).join(
+            Preguntas, Preguntas.id == Respuestas.pregunta_id
+        ).filter(
+            Respuestas.paciente_id == paciente_id,
+            Respuestas.completado_formulario_id == completado_formulario_id
+        ).all()
+        return respuestas
+    except : 
+        session.rollback()
+        return  None
 
