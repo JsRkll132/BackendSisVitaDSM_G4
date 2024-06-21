@@ -211,3 +211,12 @@ def obtener_respuestasRepository(paciente_id,completado_formulario_id ):
         session.rollback()
         return  None
 
+def diagnosticarRepository(nuevo_diagnostico) : 
+    try : 
+        session.add(nuevo_diagnostico)
+        session.commit()  
+        return {'message': 'Diagnóstico creado exitosamente','status':1}     
+    except :
+        session.rollback()
+        return None
+       
