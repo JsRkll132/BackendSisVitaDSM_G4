@@ -1,6 +1,6 @@
-from ..services.Services import InputContentFormService,getUsersService,getUsersService2,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService,GetAllFormsService
+from ..services.Services import diagnosticarService,get_usuarioService, obtener_puntuaciones_form_pacient_Service, obtener_puntuacionesAllService, obtener_respuestasService,obtener_puntuacionesService, InputContentFormService,getUsersService,getUsersService2,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService,GetAllFormsService
 from flask import Blueprint,jsonify,request
-from ..models.dbModel import Usuarios,Respuestas
+from ..models.dbModel import Diagnosticos, Usuarios,Respuestas
 from ..utils import Security
 import bcrypt
 import traceback
@@ -25,6 +25,23 @@ def getUsersRoute2() :
                    ,'contrasena':user.contrasena,'correo':user.correo,'nombre_usuario':user.nombre_usuario,'nombres':user.nombres
                    ,'numero_celular':user.numero_celular,'tipo_usuario':user.tipo_usuario} for user in data]
     return jsonify(users_list)
+
+@users_routes.get('/api/v2/getuserbyid/<int:usuario_id>')
+def get_usuarioRoutes(usuario_id)  : 
+    try : 
+        usuario = get_usuarioService(usuario_id) 
+        user_selected = {
+            "id": usuario.id,
+            "nombres": usuario.nombres,
+            "apellido_paterno": usuario.apellido_paterno,
+            "apellido_materno": usuario.apellido_materno,
+            "correo": usuario.correo,
+            "numero_celular": usuario.numero_celular,
+            "nombre_usuario": usuario.nombre_usuario,
+            "tipo_usuario": usuario.tipo_usuario}
+        return jsonify(user_selected)
+    except : 
+        return jsonify({"status":0,'detail':f'Usuario {usuario_id} no se pudo encontrar.'}),400
 
 
 @users_routes.post('/api/v2/login')
@@ -125,3 +142,24 @@ def userSubmitFormRoutes() :
         return jsonify({'status':'ocurrio un error, no se pudo enviar el formulario...','result_status':0}),503
 
 
+@users_routes.get('/api/v2/obtener/formularioCompletado/paciente/<int:paciente_id>')
+def obtener_puntuacionesRoutes(paciente_id) :
+    try : 
+        formularios_paciente_ = obtener_puntuacionesService(paciente_id)
+        formularios_paciente = [{
+            'formulario_id':formulario.formulario_id,
+            'paciente_id': formulario.paciente_id,
+            'usuario_id': formulario.usuario_id,
+            'nombres': formulario.nombres,
+            'apellido_paterno': formulario.apellido_paterno,
+            'apellido_materno': formulario.apellido_materno,
+            'tipo_formulario': formulario.tipo_formulario,
+            'completado_formulario_id': formulario.completado_formulario_id,
+            'fecha_completado':formulario.fecha_completado,
+            'suma_puntuacion': formulario.suma_puntuacion
+        } for formulario in formularios_paciente_]
+        #print(formularios_paciente)
+        return jsonify(formularios_paciente)
+        
+    except : 
+        pass
