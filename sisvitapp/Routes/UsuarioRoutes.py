@@ -163,3 +163,42 @@ def obtener_puntuacionesRoutes(paciente_id) :
         
     except : 
         pass
+
+@users_routes.get('/api/v2/obtener/formularioCompletado/all')
+def obtener_puntuacionesAllRoutes() :
+    try : 
+        formularios_paciente_ = obtener_puntuacionesAllService()
+        formularios_paciente = [{
+            'formulario_id':formulario.formulario_id,
+            'paciente_id': formulario.paciente_id,
+            'usuario_id': formulario.usuario_id,
+            'nombres': formulario.nombres,
+            'apellido_paterno': formulario.apellido_paterno,
+            'apellido_materno': formulario.apellido_materno,
+            'tipo_formulario': formulario.tipo_formulario,
+            'completado_formulario_id': formulario.completado_formulario_id,
+            'fecha_completado':formulario.fecha_completado,
+            'suma_puntuacion': formulario.suma_puntuacion
+        } for formulario in formularios_paciente_]
+        #print(formularios_paciente)
+        return jsonify(formularios_paciente)
+        
+    except : 
+        return None
+        pass
+
+@users_routes.get('/api/v2/obtener/respuestas/formularioCompletado/paciente/<int:paciente_id>/formulario_completado/<int:completado_formulario_id>')
+def obtener_respuestasRoutes(paciente_id,completado_formulario_id) :
+    try : 
+        respuesta_formularios_paciente_ = obtener_respuestasService(paciente_id,completado_formulario_id)
+        respuesta_formularios_paciente = [{
+            'respuesta_id': respuesta.respuesta_id,
+            'respuesta': respuesta.respuesta,
+            'puntuacion': respuesta.puntuacion,
+            'pregunta': respuesta.pregunta
+        } for respuesta in respuesta_formularios_paciente_]
+        #print(formularios_paciente)
+        return jsonify(respuesta_formularios_paciente)
+        
+    except : 
+        pass
