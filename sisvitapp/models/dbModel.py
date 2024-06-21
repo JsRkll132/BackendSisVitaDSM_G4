@@ -78,9 +78,12 @@ class Diagnosticos(Base):
     paciente_id = Column(Integer, ForeignKey('pacientes.id', ondelete='CASCADE'), nullable=False)
     psicologo_id = Column(Integer, ForeignKey('psicologos.id', ondelete='CASCADE'), nullable=False)
     formulario_id = Column(Integer, ForeignKey('formularios.id', ondelete='CASCADE'), nullable=False)
+    completado_formulario_id = Column(Integer, ForeignKey('completadoformulario.id', ondelete='CASCADE'), nullable=True)
     calificacion = Column(Integer, nullable=False)
     diagnostico = Column(Text, nullable=False)
     fecha_diagnostico = Column(TIMESTAMP, server_default=func.current_timestamp(), nullable=False)
+    
+    completado_formulario = relationship("CompletadoFormulario", backref="diagnosticos", cascade="all, delete", passive_deletes=True)
 
 
 class ContenidoFormulario(Base):
