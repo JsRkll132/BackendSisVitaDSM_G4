@@ -32,7 +32,10 @@ def getUsers() :
 def userLoginRepository(username , password) :
     try :
         user = session.query(Usuarios).filter_by(nombre_usuario = username).first()
-        return session.query(Pacientes).filter_by(usuario_id = user.id).first() if (bcrypt.checkpw(password.encode('utf-8'),user.contrasena.encode('utf-8'))) else None
+        if user.tipo_usuario == 'paciente' :
+            return session.query(Pacientes).filter_by(usuario_id = user.id).first(),0 if (bcrypt.checkpw(password.encode('utf-8'),user.contrasena.encode('utf-8'))) else None
+        elif user.tipo_usuario == 'psicologo' : 
+            return session.query(Psicologos).filter_by(usuario_id = user.id).first(),1 if (bcrypt.checkpw(password.encode('utf-8'),user.contrasena.encode('utf-8'))) else None
     except : 
         session.rollback()
         return None

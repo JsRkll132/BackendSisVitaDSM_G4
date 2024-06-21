@@ -50,11 +50,11 @@ def userLogin() :
         username = request.json['username']
         password = request.json['password']
         userAuth = userLoginService(username=username,password=password)
-        print(userAuth.id)
+        print(userAuth[0].id)
         if  userAuth : 
-            token = Security.Security().generate_token(userAuth)
+            token = Security.Security().generate_token(userAuth[0])
             print(token)
-            return jsonify({'status':'sucess login','token':token}) , 200
+            return jsonify({'status':'sucess login','token':token,'type_user':userAuth[1]}) , 200
         else :
             return jsonify({'status':'icorrect login'}) ,401
     except Exception as e:
