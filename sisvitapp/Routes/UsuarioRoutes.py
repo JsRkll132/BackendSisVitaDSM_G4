@@ -202,3 +202,26 @@ def obtener_respuestasRoutes(paciente_id,completado_formulario_id) :
         
     except : 
         pass
+
+@users_routes.get('/api/v2/obtener/formularioCompletado/formulario/<int:completado_formulario_id>')
+def obtener_puntuaciones_form_pacient_Routes(completado_formulario_id):
+    try:
+        formulario_paciente = obtener_puntuaciones_form_pacient_Service(completado_formulario_id)
+        if formulario_paciente:
+            resultado = {
+                'formulario_id':formulario_paciente.formulario_id,
+                'paciente_id': formulario_paciente.paciente_id,
+                'usuario_id': formulario_paciente.usuario_id,
+                'nombres': formulario_paciente.nombres,
+                'apellido_paterno': formulario_paciente.apellido_paterno,
+                'apellido_materno': formulario_paciente.apellido_materno,
+                'tipo_formulario': formulario_paciente.tipo_formulario,
+                'completado_formulario_id': formulario_paciente.completado_formulario_id,
+                'fecha_completado': formulario_paciente.fecha_completado,
+                'suma_puntuacion': formulario_paciente.suma_puntuacion
+            }
+            return jsonify(resultado),200
+        else:
+            return jsonify({"error": "No data found"}), 404
+    except:
+        return jsonify({"error": "An error occurred"}), 500
