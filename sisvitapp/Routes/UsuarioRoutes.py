@@ -225,3 +225,26 @@ def obtener_puntuaciones_form_pacient_Routes(completado_formulario_id):
             return jsonify({"error": "No data found"}), 404
     except:
         return jsonify({"error": "An error occurred"}), 500
+
+@users_routes.post('/api/v2/diagnosticar')
+def diagnosticarRoute():
+    try : 
+        data = request.get_json()
+        required_fields = ['paciente_id', 'psicologo_id', 'formulario_id', 'completado_formulario_id', 'calificacion', 'diagnostico']
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': 'Faltan campos necesarios','status':0}), 400
+        nuevo_diagnostico = Diagnosticos(
+            paciente_id=data['paciente_id'],
+            psicologo_id=data['psicologo_id'],
+            formulario_id=data['formulario_id'],
+            completado_formulario_id=data['completado_formulario_id'],
+            calificacion=data['calificacion'],
+            diagnostico=data['diagnostico']
+        )
+        sucess = diagnosticarService(nuevo_diagnostico)
+        if sucess == None :
+            return jsonify({'message': 'Hubo un error a la hora de registrar el diagnostico.','status':-1}), 400
+        return jsonify(sucess), 201
+
+    except Exception as e:
+         return jsonify({ 'error': str(e)}), 500
