@@ -8,9 +8,11 @@ from ..models.dbModel import CompletadoFormulario
 from ..models.dbModel import Formularios
 from ..models.dbModel import  ContenidoFormulario
 import os 
+from sqlalchemy.orm import joinedload
 import psycopg2 as pgc
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import func
 from flask import request
 import bcrypt
 
@@ -92,6 +94,37 @@ def InputContentFormRepository(id) :
         data = session.query(ContenidoFormulario).filter_by(formulario_id = id).all()
         return data
     except : 
+        session.rollback()
+        return None
+
+def obtener_puntuaciones_form_pacient_Repository(completado_formulario_id):
+    try:
+        resultados = session.query(
+            Formularios.id.label('formulario_id'),
+            Pacientes.id.label('paciente_id'),
+            Usuarios.id.label('usuario_id'),
+            Usuarios.nombres,
+            Usuarios.apellido_paterno,
+            Usuarios.apellido_materno,
+            Formularios.tipo.label('tipo_formulario'),
+            CompletadoFormulario.id.label('completado_formulario_id'),
+            CompletadoFormulario.fecha_completado.label('fecha_completado'),
+            func.sum(Respuestas.puntuacion).label('suma_puntuacion')
+        ).join(
+            Pacientes, Pacientes.usuario_id == Usuarios.id
+        ).join(
+            Respuestas, Respuestas.paciente_id == Pacientes.id
+        ).join(
+            CompletadoFormulario, CompletadoFormulario.id == Respuestas.completado_formulario_id
+        ).join(
+            Formularios, Formularios.id == CompletadoFormulario.formulario_id
+        ).filter(
+            CompletadoFormulario.id == completado_formulario_id
+        ).group_by(
+            Pacientes.id, Usuarios.id,Formularios.id, Formularios.tipo, CompletadoFormulario.id
+        ).first()
+        return resultados
+    except:
         session.rollback()
         return None
 
