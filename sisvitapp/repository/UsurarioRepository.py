@@ -128,3 +128,39 @@ def obtener_puntuaciones_form_pacient_Repository(completado_formulario_id):
         session.rollback()
         return None
 
+def obtener_puntuacionesRepository( paciente_id ):
+    try :
+            # Realizar la consulta
+            # Realizar la consulta
+        resultados = session.query(
+            Formularios.id.label('formulario_id'),
+            Pacientes.id.label('paciente_id'),
+            Usuarios.id.label('usuario_id'),
+            Usuarios.nombres,
+            Usuarios.apellido_paterno,
+            Usuarios.apellido_materno,
+            Formularios.tipo.label('tipo_formulario'),
+            CompletadoFormulario.id.label('completado_formulario_id'),
+            CompletadoFormulario.fecha_completado.label('fecha_completado'),
+            func.sum(Respuestas.puntuacion).label('suma_puntuacion')
+        ).join(
+            Pacientes, Pacientes.usuario_id == Usuarios.id
+        ).join(
+            Respuestas, Respuestas.paciente_id == Pacientes.id
+        ).join(
+            CompletadoFormulario, CompletadoFormulario.id == Respuestas.completado_formulario_id
+        ).join(
+            Formularios, Formularios.id == CompletadoFormulario.formulario_id
+        ).filter(
+            Pacientes.id == paciente_id
+        ).group_by(
+            Pacientes.id,Usuarios.id,Formularios.id, Formularios.tipo, CompletadoFormulario.id
+        ).all()
+        #print('-'*50)
+        #print(resultados)
+        #print('-'*50)
+        return resultados
+    except : 
+        session.rollback()
+        return None
+
