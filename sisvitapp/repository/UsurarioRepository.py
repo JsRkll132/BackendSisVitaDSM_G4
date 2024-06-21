@@ -37,6 +37,15 @@ def userLoginRepository(username , password) :
         session.rollback()
         return None
 
+def get_usuarioRepository(usuario_id):
+    # Consultar la información del usuario
+    try : 
+        usuario = session.query(Usuarios).filter_by(id=usuario_id).first()
+        return usuario
+    except : 
+        session.rollback()
+        return None
+
 
 def userRegisterRepostory(user) :
     try : 
