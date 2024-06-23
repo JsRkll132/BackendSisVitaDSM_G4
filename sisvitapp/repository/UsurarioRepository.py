@@ -167,6 +167,8 @@ def obtener_puntuacionesRepository( paciente_id ):
             Pacientes.id == paciente_id
         ).group_by(
             Pacientes.id,Usuarios.id,Formularios.id, Formularios.tipo, CompletadoFormulario.id
+        ).order_by(
+            CompletadoFormulario.id
         ).all()
         #print('-'*50)
         #print(resultados)
@@ -199,6 +201,8 @@ def obtener_puntuacionesAllRepository():
             Formularios, Formularios.id == CompletadoFormulario.formulario_id
         ).group_by(
             Pacientes.id, Usuarios.id, Formularios.id, Formularios.tipo, CompletadoFormulario.id
+        ).order_by(
+            CompletadoFormulario.id
         ).all()
         return resultados
     except:
