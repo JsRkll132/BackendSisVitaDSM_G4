@@ -100,7 +100,7 @@ class CompletadoFormulario(Base):
     paciente_id = Column(Integer, ForeignKey('pacientes.id'), nullable=False)
     formulario_id = Column(Integer, ForeignKey('formularios.id'), nullable=False)
     fecha_completado = Column(TIMESTAMP, default=func.current_timestamp(), nullable=False)
-
+    nivel_ansiedad = Column(String(255),nullable=True)
     Pacientes = relationship("Pacientes", backref="completadoformulario_", cascade="all, delete", passive_deletes=True)
     Formularios = relationship("Formularios", backref="completadoformulario_", cascade="all, delete", passive_deletes=True)
 # Crear índices para las tablas Respuestas y Diagnosticos

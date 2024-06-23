@@ -82,9 +82,31 @@ def GetAllFormsRepository() :
         session.rollback()
         return None
 def userSubmitFormRepository(answerList,user_id,form_id) :
+    def calculate_level_anxiety(formulario_id,answer_lists) : 
+        if formulario_id == 2 : 
+            percent_score = 100 * sum([answer.puntuacion for answer in answer_lists])/80
+            if percent_score < 50 : 
+                return 'NORMAL'
+            elif percent_score>=50 and percent_score < 59 : 
+                return 'MODERADA'
+            elif percent_score>=60 and percent_score < 69 : 
+                return 'ALTA'
+            else : 
+                return 'MUY ALTA'
+        elif formulario_id == 1 : 
+            return 'NORMAL'
+            pass
+        elif formulario_id == 3 : 
+            return 'NORMAL'
+            pass
+        else : 
+            return 'NORMAL'
+            pass
+        pass
     try : 
         print('------------')
-        complete_form = CompletadoFormulario(paciente_id=user_id,formulario_id=form_id)
+        level_anxiety = calculate_level_anxiety(answer_lists=answerList,formulario_id=form_id)
+        complete_form = CompletadoFormulario(paciente_id=user_id,formulario_id=form_id,nivel_ansiedad = level_anxiety)
         try : 
             session.add(complete_form)
             session.commit()
@@ -119,6 +141,7 @@ def obtener_puntuaciones_form_pacient_Repository(completado_formulario_id):
             Usuarios.apellido_paterno,
             Usuarios.apellido_materno,
             Formularios.tipo.label('tipo_formulario'),
+            CompletadoFormulario.nivel_ansiedad.label('nivel_ansiedad'),
             CompletadoFormulario.id.label('completado_formulario_id'),
             CompletadoFormulario.fecha_completado.label('fecha_completado'),
             func.sum(Respuestas.puntuacion).label('suma_puntuacion')
@@ -190,6 +213,7 @@ def obtener_puntuacionesAllRepository():
             Formularios.tipo.label('tipo_formulario'),
             CompletadoFormulario.id.label('completado_formulario_id'),
             CompletadoFormulario.fecha_completado.label('fecha_completado'),
+            CompletadoFormulario.nivel_ansiedad.label('nivel_ansiedad'),
             func.sum(Respuestas.puntuacion).label('suma_puntuacion')
         ).join(
             Pacientes, Pacientes.usuario_id == Usuarios.id
@@ -200,7 +224,7 @@ def obtener_puntuacionesAllRepository():
         ).join(
             Formularios, Formularios.id == CompletadoFormulario.formulario_id
         ).group_by(
-            Pacientes.id, Usuarios.id, Formularios.id, Formularios.tipo, CompletadoFormulario.id
+            Pacientes.id, Usuarios.id, Formularios.id, Formularios.tipo, CompletadoFormulario.id, CompletadoFormulario.nivel_ansiedad
         ).order_by(
             CompletadoFormulario.id
         ).all()

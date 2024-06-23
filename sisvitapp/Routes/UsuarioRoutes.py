@@ -178,6 +178,7 @@ def obtener_puntuacionesAllRoutes() :
             'tipo_formulario': formulario.tipo_formulario,
             'completado_formulario_id': formulario.completado_formulario_id,
             'fecha_completado':formulario.fecha_completado,
+            'nivel_ansiedad': formulario.nivel_ansiedad,
             'suma_puntuacion': formulario.suma_puntuacion
         } for formulario in formularios_paciente_]
         #print(formularios_paciente)
@@ -218,6 +219,7 @@ def obtener_puntuaciones_form_pacient_Routes(completado_formulario_id):
                 'tipo_formulario': formulario_paciente.tipo_formulario,
                 'completado_formulario_id': formulario_paciente.completado_formulario_id,
                 'fecha_completado': formulario_paciente.fecha_completado,
+                'nivel_ansiedad' : formulario_paciente.nivel_ansiedad,
                 'suma_puntuacion': formulario_paciente.suma_puntuacion
             }
             return jsonify(resultado),200
