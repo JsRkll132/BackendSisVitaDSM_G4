@@ -82,8 +82,20 @@ def GetAllFormsRepository() :
         session.rollback()
         return None
 def userSubmitFormRepository(answerList,user_id,form_id) :
+
     def calculate_level_anxiety(formulario_id,answer_lists) : 
-        if formulario_id == 2 : 
+        if formulario_id == 1 : 
+            percent_score = 100 * sum([answer.puntuacion for answer in answer_lists])/84
+            if percent_score < 25 : 
+                return 'NORMAL'
+            elif percent_score>=25 and percent_score < 50 : 
+                return 'MODERADA'
+            elif percent_score>=50 and percent_score < 75 : 
+                return 'ALTA'
+            else : 
+                return 'MUY ALTA'
+            
+        elif formulario_id == 2 : 
             percent_score = 100 * sum([answer.puntuacion for answer in answer_lists])/80
             if percent_score < 50 : 
                 return 'NORMAL'
@@ -93,16 +105,11 @@ def userSubmitFormRepository(answerList,user_id,form_id) :
                 return 'ALTA'
             else : 
                 return 'MUY ALTA'
-        elif formulario_id == 1 : 
-            return 'NORMAL'
-            pass
         elif formulario_id == 3 : 
             return 'NORMAL'
-            pass
         else : 
             return 'NORMAL'
-            pass
-        pass
+        
     try : 
         print('------------')
         level_anxiety = calculate_level_anxiety(answer_lists=answerList,formulario_id=form_id)
