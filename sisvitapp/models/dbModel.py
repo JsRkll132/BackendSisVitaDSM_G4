@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text, ForeignKey, TIMESTAMP, func, CheckConstraint, Index
+from sqlalchemy import Float, create_engine, Column, Integer, String, Text, ForeignKey, TIMESTAMP, func, CheckConstraint, Index
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker, backref
 import os
 from dotenv import load_dotenv
@@ -20,11 +20,23 @@ class Usuarios(Base):
     nombre_usuario = Column(String(255), unique=True, nullable=False)
     contrasena = Column(String(255), nullable=False)
     tipo_usuario = Column(String(10), nullable=False)
-
+    ubigeo = Column(String(6), ForeignKey('ubigeo.ubigeo'), nullable=True) 
     # Relaciones
     paciente = relationship("Pacientes", backref=backref("usuario", uselist=False), cascade="all, delete", passive_deletes=True)
     psicologo = relationship("Psicologos", backref=backref("usuario", uselist=False), cascade="all, delete", passive_deletes=True)
+class Ubigeo(Base):
+    __tablename__ = 'ubigeo'
+    ubigeo = Column(String(6), primary_key=True)
+    distrito = Column(String(255), nullable=False)
+    provincia = Column(String(255), nullable=False)
+    departamento = Column(String(255), nullable=False)
+    poblacion = Column(Integer, nullable=False)
+    superficie = Column(Float, nullable=False)
+    lat = Column(Float, nullable=False)
+    long = Column(Float, nullable=False)
 
+    # Relación con la tabla Usuarios
+    usuarios = relationship("Usuarios", backref="ubicacion")
 # Definir la clase Pacientes
 class Pacientes(Base):
     __tablename__ = 'pacientes'
