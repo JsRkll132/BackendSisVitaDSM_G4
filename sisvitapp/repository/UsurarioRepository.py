@@ -13,7 +13,7 @@ import psycopg2 as pgc
 from sqlalchemy import and_, create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import func
-from flask import json, request
+from flask import json, jsonify, request
 import bcrypt
 
 engine = create_engine(os.getenv('DATABASE_URL'))
@@ -81,8 +81,6 @@ def GetAllFormsRepository() :
     except : 
         session.rollback()
         return None
-    
-
 def userSubmitFormRepository(answerList,paciente_id,form_id) :
 
     try : 
@@ -147,7 +145,6 @@ def userSubmitFormRepository(answerList,paciente_id,form_id) :
         session.rollback()
         return None
 
-
 def InputContentFormRepository(id) :
     try : 
         data = session.query(ContenidoFormulario).filter_by(formulario_id = id).all()
@@ -165,6 +162,7 @@ def obtener_puntuaciones_form_pacient_Repository(completado_formulario_id):
             Usuarios.nombres,
             Usuarios.apellido_paterno,
             Usuarios.apellido_materno,
+            Usuarios.ubigeo,
             Formularios.tipo.label('tipo_formulario'),
             CompletadoFormulario.nivel_ansiedad.label('nivel_ansiedad'),
             CompletadoFormulario.id.label('completado_formulario_id'),
@@ -199,6 +197,7 @@ def obtener_puntuacionesRepository( paciente_id ):
             Usuarios.nombres,
             Usuarios.apellido_paterno,
             Usuarios.apellido_materno,
+            Usuarios.ubigeo,
             Formularios.tipo.label('tipo_formulario'),
             CompletadoFormulario.id.label('completado_formulario_id'),
             CompletadoFormulario.fecha_completado.label('fecha_completado'),
@@ -234,6 +233,7 @@ def obtener_puntuacionesAllRepository():
             Usuarios.nombres,
             Usuarios.apellido_paterno,
             Usuarios.apellido_materno,
+            Usuarios.ubigeo,
             Formularios.id.label('formulario_id'),
             Formularios.tipo.label('tipo_formulario'),
             CompletadoFormulario.id.label('completado_formulario_id'),
@@ -340,6 +340,46 @@ def inHeatMapRepository():
         ]
 
         return data
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
+        return None
+    
+def obtenerDatosUbigeoRepository() :
+    try:
+        departamentos = session.query(
+            Ubigeo.departamento
+        ).distinct().order_by(Ubigeo.departamento).all()
+
+        estructura = []
+        for departamento in departamentos:
+            provincias = session.query(
+                Ubigeo.provincia
+            ).filter(Ubigeo.departamento == departamento.departamento).distinct().order_by(Ubigeo.provincia).all()
+
+            provincias_estructura = []
+            for provincia in provincias:
+                distritos = session.query(
+                    Ubigeo.distrito,
+                    Ubigeo.ubigeo
+                ).filter(Ubigeo.provincia == provincia.provincia).order_by(Ubigeo.distrito).all()
+
+                distritos_estructura = [
+                    {"distrito": distrito.distrito, "ubigeo": distrito.ubigeo} for distrito in distritos
+                ]
+
+                provincias_estructura.append({
+                    "provincia": provincia.provincia,
+                    "distritos": distritos_estructura
+                })
+
+            estructura.append({
+                "departamento": departamento.departamento,
+                "provincias": provincias_estructura
+            })
+
+        return estructura
+
     except Exception as e:
         session.rollback()
         print(f"Error: {e}")
