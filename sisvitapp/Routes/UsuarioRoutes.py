@@ -126,6 +126,7 @@ def GetAllFormsRoutes() :
 @users_routes.post('/api/v2/llenarFormulario')   
 def userSubmitFormRoutes() : 
     try :
+        #request"
         paciente_id = request.json['paciente_id']
         formulario_id = request.json['formulario_id']
         respuestas = request.json['respuestas'] 
