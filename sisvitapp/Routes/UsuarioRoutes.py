@@ -128,18 +128,20 @@ def userSubmitFormRoutes() :
     try :
         paciente_id = request.json['paciente_id']
         formulario_id = request.json['formulario_id']
-        respuestas = [Respuestas(respuesta = rpta['respuesta'],
-                                 puntuacion =rpta['puntuacion'],pregunta_id = rpta['pregunta_id'],paciente_id = rpta['paciente_id']) for rpta in  request.json['respuestas']] 
+        respuestas = request.json['respuestas'] 
         for resp in respuestas :
-            print(resp.puntuacion)
-        db_response = userSubmitFormService(answerList=respuestas,user_id=paciente_id,form_id=formulario_id)
+            print(resp)
+        db_response = userSubmitFormService(answerList=respuestas,paciente_id=paciente_id,form_id=formulario_id)
+        print(db_response)
         if db_response :
-            return jsonify({'status':db_response,'result_status':1}),200
+            return jsonify({'data':db_response,'result_status':1}),201
         else :
-            return jsonify({'status':'No es posible añadir','result_status':0}),500
+            return jsonify({'data':'No es posible añadir','result_status':0}),500
         
-    except :
-        return jsonify({'status':'ocurrio un error, no se pudo enviar el formulario...','result_status':0}),503
+    except Exception as e:
+        print(str(e))
+
+        return jsonify({'data':'ocurrio un error, no se pudo enviar el formulario...','result_status':0}),503
 
 
 @users_routes.get('/api/v2/obtener/formularioCompletado/paciente/<int:paciente_id>')

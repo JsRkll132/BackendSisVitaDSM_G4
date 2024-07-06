@@ -10,10 +10,10 @@ from ..models.dbModel import  ContenidoFormulario
 import os 
 from sqlalchemy.orm import joinedload
 import psycopg2 as pgc
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import func
-from flask import request
+from flask import json, request
 import bcrypt
 
 engine = create_engine(os.getenv('DATABASE_URL'))
@@ -81,54 +81,72 @@ def GetAllFormsRepository() :
     except : 
         session.rollback()
         return None
-def userSubmitFormRepository(answerList,user_id,form_id) :
+    
 
-    def calculate_level_anxiety(formulario_id,answer_lists) : 
-        if formulario_id == 1 : 
-            percent_score = 100 * sum([answer.puntuacion for answer in answer_lists])/84
-            if percent_score < 25 : 
-                return 'NORMAL'
-            elif percent_score>=25 and percent_score < 50 : 
-                return 'MODERADA'
-            elif percent_score>=50 and percent_score < 75 : 
-                return 'ALTA'
-            else : 
-                return 'MUY ALTA'
-            
-        elif formulario_id == 2 : 
-            percent_score = 100 * sum([answer.puntuacion for answer in answer_lists])/80
-            if percent_score < 50 : 
-                return 'NORMAL'
-            elif percent_score>=50 and percent_score < 59 : 
-                return 'MODERADA'
-            elif percent_score>=60 and percent_score < 69 : 
-                return 'ALTA'
-            else : 
-                return 'MUY ALTA'
-        elif formulario_id == 3 : 
-            return 'NORMAL'
-        else : 
-            return 'NORMAL'
-        
+def userSubmitFormRepository(answerList,paciente_id,form_id) :
+
     try : 
-        print('------------')
-        level_anxiety = calculate_level_anxiety(answer_lists=answerList,formulario_id=form_id)
-        complete_form = CompletadoFormulario(paciente_id=user_id,formulario_id=form_id,nivel_ansiedad = level_anxiety)
+        answers_json = json.dumps(answerList)
+        session.execute(
+            text("""
+                CALL submit_form_answers(:paciente_id, :form_id, :answers_json);
+                    """),
+                {"paciente_id": paciente_id, "form_id": form_id, "answers_json": answers_json}  
+            )
+        session.commit()
         try : 
-            session.add(complete_form)
-            session.commit()
-            cform_id = complete_form.id
-            [session.add(Respuestas(respuesta = answer.respuesta,puntuacion = answer.puntuacion,pregunta_id = answer.pregunta_id
-                                    ,paciente_id = answer.paciente_id,completado_formulario_id=cform_id)) for answer in answerList ]
-            session.commit()
-            return f'Response has been submited succesfully.'
-        except Exception as e:
+            resultados = session.query(
+                Formularios.id.label('formulario_id'),
+                Pacientes.id.label('paciente_id'),
+                Usuarios.id.label('usuario_id'),
+                Usuarios.nombres,
+                Usuarios.apellido_paterno,
+                Usuarios.apellido_materno,
+                Usuarios.ubigeo,
+                Formularios.tipo.label('tipo_formulario'),
+                CompletadoFormulario.nivel_ansiedad.label('nivel_ansiedad'),
+                CompletadoFormulario.id.label('completado_formulario_id'),
+                CompletadoFormulario.fecha_completado.label('fecha_completado'),
+                func.sum(Respuestas.puntuacion).label('suma_puntuacion')
+            ).join(
+                Pacientes, Pacientes.usuario_id == Usuarios.id
+            ).join(
+                Respuestas, Respuestas.paciente_id == Pacientes.id
+            ).join(
+                CompletadoFormulario, CompletadoFormulario.id == Respuestas.completado_formulario_id
+            ).join(
+                Formularios, Formularios.id == CompletadoFormulario.formulario_id
+            ).filter(
+                Pacientes.id == paciente_id
+            ).group_by(
+                Pacientes.id, Usuarios.id,Formularios.id, Formularios.tipo, CompletadoFormulario.id
+            ).order_by(CompletadoFormulario.id.desc()).first()
+            data = {
+                    'formulario_id': resultados.formulario_id,
+                    'paciente_id': resultados.paciente_id,
+                    'usuario_id': resultados.usuario_id,
+                    'nombres': resultados.nombres,
+                    'apellido_paterno': resultados.apellido_paterno,
+                    'apellido_materno': resultados.apellido_materno,
+                    'ubigeo': resultados.ubigeo,
+                    'tipo_formulario': resultados.tipo_formulario,
+                    'nivel_ansiedad': resultados.nivel_ansiedad,
+                    'completado_formulario_id': resultados.completado_formulario_id,
+                    'fecha_completado': resultados.fecha_completado,
+                    'suma_puntuacion': resultados.suma_puntuacion
+                }
+            print("-------------")
+            print(data)
+            return data
+        except Exception as e : 
+            print(str(e))
             session.rollback()
-            print(str(e)) 
-
-    except  : 
+            return None
+    except Exception as e : 
+        print(str(e))
         session.rollback()
         return None
+
 
 def InputContentFormRepository(id) :
     try : 

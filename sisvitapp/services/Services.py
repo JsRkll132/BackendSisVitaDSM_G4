@@ -24,8 +24,8 @@ def userRegisterService(user) :
 def FormQuestionsService(id):
     return FormQuestionsRepository(id)
 
-def userSubmitFormService(answerList,user_id,form_id) :
-    return  userSubmitFormRepository(answerList,user_id,form_id)
+def userSubmitFormService(answerList,paciente_id,form_id) :
+    return  userSubmitFormRepository(answerList,paciente_id,form_id)
 def GetAllFormsService() :
     return GetAllFormsRepository() 
 
