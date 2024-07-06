@@ -1,5 +1,5 @@
 from ..models.Usuario import Usuario
-from ..models.dbModel import Usuarios
+from ..models.dbModel import Ubigeo, Usuarios
 from ..models.dbModel import Pacientes
 from ..models.dbModel import Psicologos
 from ..models.dbModel import Respuestas
@@ -10,7 +10,7 @@ from ..models.dbModel import  ContenidoFormulario
 import os 
 from sqlalchemy.orm import joinedload
 import psycopg2 as pgc
-from sqlalchemy import create_engine, text
+from sqlalchemy import and_, create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import func
 from flask import json, request
@@ -285,3 +285,62 @@ def diagnosticarRepository(nuevo_diagnostico) :
         session.rollback()
         return None
        
+def inHeatMapRepository():
+    try:
+        # Consulta ORM usando SQLAlchemy
+        subquery = (
+            session.query(
+                CompletadoFormulario.paciente_id,
+                func.max(CompletadoFormulario.fecha_completado).label("max_fecha_completado")
+            )
+            .group_by(CompletadoFormulario.paciente_id)
+            .subquery()
+        )
+
+        query = (
+            session.query(
+                Usuarios.id.label("id_usuario"),
+                Pacientes.id.label("id_paciente"),
+                Usuarios.nombres,
+                Usuarios.apellido_paterno,
+                Usuarios.apellido_materno,
+                Usuarios.ubigeo,
+                CompletadoFormulario.id.label("id_ultimo_formulario"),
+                CompletadoFormulario.nivel_ansiedad,
+                CompletadoFormulario.formulario_id.label("id_formulario"),
+                Ubigeo.lat.label("latitud"),
+                Ubigeo.long.label("longitud")
+            )
+            .join(Pacientes, Usuarios.id == Pacientes.usuario_id)
+            .join(CompletadoFormulario, Pacientes.id == CompletadoFormulario.paciente_id)
+            .join(Ubigeo, Usuarios.ubigeo == Ubigeo.ubigeo)
+            .join(subquery, and_(
+                CompletadoFormulario.paciente_id == subquery.c.paciente_id,
+                CompletadoFormulario.fecha_completado == subquery.c.max_fecha_completado
+            ))
+            .order_by(Usuarios.nombres, Usuarios.apellido_paterno, Usuarios.apellido_materno)
+            .all()
+        )
+
+        data = [
+            {
+                'id_usuario': row.id_usuario,
+                'id_paciente': row.id_paciente,
+                'nombres': row.nombres,
+                'apellido_paterno': row.apellido_paterno,
+                'apellido_materno': row.apellido_materno,
+                'ubigeo': row.ubigeo,
+                'latitud': row.latitud,
+                'longitud': row.longitud,
+                'id_ultimo_formulario': row.id_ultimo_formulario,
+                'nivel_ansiedad': row.nivel_ansiedad,
+                'id_formulario': row.id_formulario
+            }
+            for row in query
+        ]
+
+        return data
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
+        return None

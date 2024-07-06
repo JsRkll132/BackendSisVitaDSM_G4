@@ -1,4 +1,4 @@
-from ..services.Services import diagnosticarService,get_usuarioService, obtener_puntuaciones_form_pacient_Service, obtener_puntuacionesAllService, obtener_respuestasService,obtener_puntuacionesService, InputContentFormService,getUsersService,getUsersService2,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService,GetAllFormsService
+from ..services.Services import diagnosticarService,get_usuarioService, inHeatMapService, obtener_puntuaciones_form_pacient_Service, obtener_puntuacionesAllService, obtener_respuestasService,obtener_puntuacionesService, InputContentFormService,getUsersService,getUsersService2,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService,GetAllFormsService
 from flask import Blueprint,jsonify,request
 from ..models.dbModel import Diagnosticos, Usuarios,Respuestas
 from ..utils import Security
@@ -253,3 +253,17 @@ def diagnosticarRoute():
 
     except Exception as e:
          return jsonify({ 'error': str(e)}), 500
+    
+
+  
+@users_routes.get('/api/v2/get/heatMapService')    
+def inHeatMapRoutes() : 
+    try:
+        data = inHeatMapService()
+        print(data)
+        if data == None : 
+            return jsonify({'message': 'Hubo un error a la hora de registrar el diagnostico.','status':-1}), 400
+        return jsonify({'data':data,'status':1}),201
+    except Exception as e:
+         return jsonify({ 'error': str(e)}), 500
+    

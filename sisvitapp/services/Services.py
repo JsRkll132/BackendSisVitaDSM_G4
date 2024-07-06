@@ -1,4 +1,4 @@
-from ..repository.UsurarioRepository import diagnosticarRepository, get_usuarioRepository, obtener_puntuaciones_form_pacient_Repository, obtener_puntuacionesAllRepository,obtener_respuestasRepository,obtener_puntuacionesRepository,InputContentFormRepository,getUsers,userLoginRepository,userRegisterRepostory,FormQuestionsRepository,userSubmitFormRepository,GetAllFormsRepository
+from ..repository.UsurarioRepository import diagnosticarRepository, get_usuarioRepository, inHeatMapRepository, obtener_puntuaciones_form_pacient_Repository, obtener_puntuacionesAllRepository,obtener_respuestasRepository,obtener_puntuacionesRepository,InputContentFormRepository,getUsers,userLoginRepository,userRegisterRepostory,FormQuestionsRepository,userSubmitFormRepository,GetAllFormsRepository
 from ..models.dbModel import Usuarios
 from sqlalchemy import create_engine, Column, Integer, String, Text, ForeignKey, TIMESTAMP, func, CheckConstraint, Index
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker, backref
@@ -50,3 +50,6 @@ def obtener_puntuacionesAllService() :
 
 def obtener_puntuaciones_form_pacient_Service(completado_formulario_id):
     return obtener_puntuaciones_form_pacient_Repository(completado_formulario_id)
+
+def inHeatMapService() :
+    return inHeatMapRepository()
