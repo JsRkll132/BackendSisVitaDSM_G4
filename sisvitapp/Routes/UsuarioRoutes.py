@@ -1,4 +1,4 @@
-from ..services.Services import diagnosticarService,get_usuarioService, obtener_puntuaciones_form_pacient_Service, obtener_puntuacionesAllService, obtener_respuestasService,obtener_puntuacionesService, InputContentFormService,getUsersService,getUsersService2,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService,GetAllFormsService
+from ..services.Services import diagnosticarService,get_usuarioService, inHeatMapService, obtener_puntuaciones_form_pacient_Service, obtener_puntuacionesAllService, obtener_respuestasService,obtener_puntuacionesService, InputContentFormService,getUsersService,getUsersService2, obtenerDatosUbigeoService,userLoginService,userRegisterService,FormQuestionsService,userSubmitFormService,GetAllFormsService
 from flask import Blueprint,jsonify,request
 from ..models.dbModel import Diagnosticos, Usuarios,Respuestas
 from ..utils import Security
@@ -38,7 +38,9 @@ def get_usuarioRoutes(usuario_id)  :
             "correo": usuario.correo,
             "numero_celular": usuario.numero_celular,
             "nombre_usuario": usuario.nombre_usuario,
-            "tipo_usuario": usuario.tipo_usuario}
+            "tipo_usuario": usuario.tipo_usuario,
+            "ubigeo" : usuario.ubigeo
+            }
         return jsonify(user_selected)
     except : 
         return jsonify({"status":0,'detail':f'Usuario {usuario_id} no se pudo encontrar.'}),400
@@ -73,19 +75,20 @@ def userRegister() :
         correo = request.json['correo']
         tipo_usuario = request.json['tipo_usuario']
         numero_celular = request.json['numero_celular']
-        
+        ubigeo = request.json['ubigeo']
         new_user = Usuarios(nombre_usuario = nombre_usuario,nombres = nombres,
                             apellido_paterno = apellido_paterno,apellido_materno = apellido_materno,
                             contrasena = contrasena.decode('utf-8'),
                             correo = correo,
                             tipo_usuario = tipo_usuario,
-                            numero_celular = numero_celular
+                            numero_celular = numero_celular,
+                            ubigeo = ubigeo
                             )
         content = userRegisterService(new_user)
         if content['status']==1 :
-            return jsonify({'status':content,'sucess':1}),200
+            return jsonify({'status':content,'sucess':1}),201
         else :
-            return content,500
+            return jsonify(content),500
         
     except :
         return jsonify({'status':'ocurrio un error...'}),503
@@ -105,7 +108,9 @@ def FormQuestionsRoutes(id) :
 def  InputContentFormRoutes(id) : 
     try : 
         data = InputContentFormService(id)
-        ContentForm = [{'id':point.id,'formulario_id' : point.formulario_id,'respuesta_formulario':point.respuestaformulario,'puntaje':point.puntaje } for point in data]
+        ContentForm = [{'id':point.id,'formulario_id' : point.formulario_id,
+                        'respuesta_formulario':point.respuestaformulario,
+                        'puntaje':point.puntaje } for point in data]
         return jsonify(ContentForm),200   
     except :
         return jsonify({"status":"Ocurrio un error en la solicitud"}),500
@@ -126,7 +131,6 @@ def GetAllFormsRoutes() :
 @users_routes.post('/api/v2/llenarFormulario')   
 def userSubmitFormRoutes() : 
     try :
-        #request"
         paciente_id = request.json['paciente_id']
         formulario_id = request.json['formulario_id']
         respuestas = request.json['respuestas'] 
@@ -156,6 +160,7 @@ def obtener_puntuacionesRoutes(paciente_id) :
             'nombres': formulario.nombres,
             'apellido_paterno': formulario.apellido_paterno,
             'apellido_materno': formulario.apellido_materno,
+            'ubigeo':formulario.ubigeo,
             'tipo_formulario': formulario.tipo_formulario,
             'completado_formulario_id': formulario.completado_formulario_id,
             'fecha_completado':formulario.fecha_completado,
@@ -178,6 +183,7 @@ def obtener_puntuacionesAllRoutes() :
             'nombres': formulario.nombres,
             'apellido_paterno': formulario.apellido_paterno,
             'apellido_materno': formulario.apellido_materno,
+            'ubigeo':formulario.ubigeo,
             'tipo_formulario': formulario.tipo_formulario,
             'completado_formulario_id': formulario.completado_formulario_id,
             'fecha_completado':formulario.fecha_completado,
@@ -219,6 +225,7 @@ def obtener_puntuaciones_form_pacient_Routes(completado_formulario_id):
                 'nombres': formulario_paciente.nombres,
                 'apellido_paterno': formulario_paciente.apellido_paterno,
                 'apellido_materno': formulario_paciente.apellido_materno,
+                'ubigeo':formulario_paciente.ubigeo,
                 'tipo_formulario': formulario_paciente.tipo_formulario,
                 'completado_formulario_id': formulario_paciente.completado_formulario_id,
                 'fecha_completado': formulario_paciente.fecha_completado,
@@ -254,8 +261,6 @@ def diagnosticarRoute():
     except Exception as e:
          return jsonify({ 'error': str(e)}), 500
     
-
-  
 @users_routes.get('/api/v2/get/heatMapService')    
 def inHeatMapRoutes() : 
     try:
@@ -267,3 +272,12 @@ def inHeatMapRoutes() :
     except Exception as e:
          return jsonify({ 'error': str(e)}), 500
     
+
+@users_routes.get('/api/v2/get/ubigeosService')    
+def obtenerDatosUbigeoRoutes() : 
+    try : 
+        data = obtenerDatosUbigeoService()
+        return jsonify(data),200
+    except Exception as e :
+        print(str(e))
+        return jsonify({ 'error': str(e)}), 500
